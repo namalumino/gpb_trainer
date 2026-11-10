@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADHS Geschichte Trainer – Das Mittelalter (Seiten 1–8)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #fef3c7; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #d97706; border-radius: 3px; }
+    </style>
+</head>
+<body class="bg-amber-50/70 min-h-screen text-slate-800 font-sans flex flex-col selection:bg-amber-200">
+
+    <!-- Header Navigation -->
+    <header class="bg-gradient-to-r from-amber-800 via-amber-700 to-amber-800 text-white shadow-md">
+        <div class="max-w-4xl mx-auto px-4 py-3.5 flex flex-wrap justify-between items-center gap-3">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-amber-900/60 rounded-xl flex items-center justify-center text-xl text-amber-300 border border-amber-600/40">
+                    <i class="fa-solid fa-castle"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-extrabold tracking-tight">ADHS History Flashcards</h1>
+                    <p class="text-xs text-amber-200">Das Leben in der Stadt (Seiten 1 bis 8)</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <button onclick="showStatsModal()" class="bg-amber-900 hover:bg-amber-950 text-amber-200 text-xs px-3 py-2 rounded-lg font-bold border border-amber-700 transition flex items-center gap-1.5 shadow-sm">
+                    <i class="fa-solid fa-chart-line text-amber-400"></i> Statistik
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto px-4 py-5 flex-grow w-full">
+
+        <!-- SEITENAUSWAHL & FÜHRERSCHEIN FORTSCHRITT -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-amber-200 mb-5">
+            <div class="flex justify-between items-center mb-2.5">
+                <h2 class="text-xs font-extrabold text-amber-900 uppercase tracking-wider flex items-center gap-1.5">
+                    <i class="fa-solid fa-layer-group"></i> Wähle deine Lerneinheit:
+                </h2>
+                <span id="overall-mastery-text" class="text-xs font-bold text-amber-700">0% Gemeistert</span>
+            </div>
+
+            <!-- SEITEN BUTTONS (Grid) -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 mb-3" id="page-nav-grid">
+                <!-- Dynamisch -->
+            </div>
+
+            <!-- FÜHRERSCHEIN BALKEN -->
+            <div class="bg-slate-100 p-2.5 rounded-xl border border-slate-200">
+                <div class="w-full bg-slate-200 h-3 rounded-full overflow-hidden flex shadow-inner">
+                    <div id="bar-red" class="bg-rose-500 h-full transition-all duration-300" style="width: 100%" title="Offen / Rot"></div>
+                    <div id="bar-yellow" class="bg-amber-400 h-full transition-all duration-300" style="width: 0%" title="1x Gewusst"></div>
+                    <div id="bar-orange" class="bg-orange-500 h-full transition-all duration-300" style="width: 0%" title="2x Gewusst"></div>
+                    <div id="bar-green" class="bg-emerald-500 h-full transition-all duration-300" style="width: 0%" title="3x Gewusst (Grün)"></div>
+                </div>
+                <div class="flex justify-between text-[10px] text-slate-500 mt-1.5 font-medium">
+                    <span class="flex items-center gap-1"><span class="w-2 h-2 bg-rose-500 rounded-full"></span> 🔴 Ungelöst/Falsch</span>
+                    <span class="flex items-center gap-1"><span class="w-2 h-2 bg-amber-400 rounded-full"></span> 🟡 1x Gewusst</span>
+                    <span class="flex items-center gap-1"><span class="w-2 h-2 bg-orange-500 rounded-full"></span> 🟠 2x Gewusst</span>
+                    <span class="flex items-center gap-1"><span class="w-2 h-2 bg-emerald-500 rounded-full"></span> 🟢 3x Gewusst (Grün)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- KARTEIKARTEN BOX (ADHS DESIGN) -->
+        <div class="bg-white rounded-2xl shadow-sm border border-amber-200 p-6 flex flex-col justify-between min-h-[380px]">
+            
+            <!-- HEADER DER KARTE -->
+            <div>
+                <div class="flex justify-between items-center border-b border-amber-100 pb-3 mb-4">
+                    <div class="flex items-center gap-2">
+                        <span id="card-page-badge" class="bg-amber-100 text-amber-900 text-xs font-black px-2.5 py-1 rounded-md uppercase">
+                            Seite 1
+                        </span>
+                        <span id="card-status-badge" class="text-xs px-2 py-0.5 rounded font-bold border">
+                            <!-- Status Badges -->
+                        </span>
+                    </div>
+                    <span id="card-counter" class="text-xs font-bold text-slate-400">
+                        Karte 1 von 4
+                    </span>
+                </div>
+
+                <!-- FRAGE -->
+                <div class="my-4">
+                    <h3 id="card-question" class="text-lg sm:text-xl font-bold text-slate-800 leading-snug">
+                        Frage wird geladen...
+                    </h3>
+                </div>
+            </div>
+
+            <!-- ANTWORT (ZUNÄCHST VERSTECKT) -->
+            <div id="answer-box" class="hidden my-4 p-4 rounded-xl bg-amber-50/90 border-2 border-amber-300/60">
+                <div class="text-xs font-bold text-amber-800 uppercase tracking-wider mb-2">Antwort:</div>
+                <div id="card-answer" class="text-base font-semibold text-slate-800 leading-relaxed">
+                    <!-- Antworttext -->
+                </div>
+            </div>
+
+            <!-- KONTROLL-BUTTONS -->
+            <div class="mt-4 pt-3 border-t border-amber-100">
+                <!-- BUTTON 1: ANTWORT AUFDECKEN -->
+                <button id="btn-reveal" onclick="revealAnswer()" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-extrabold py-3.5 rounded-xl transition shadow-md flex items-center justify-center gap-2 text-base">
+                    <i class="fa-solid fa-eye"></i> Antwort Aufdecken
+                </button>
+
+                <!-- BUTTONS NACH DEM AUFDECKEN (Bewertung) -->
+                <div id="rating-buttons" class="hidden grid grid-cols-2 gap-3">
+                    <button onclick="rateCard(false)" class="w-full bg-rose-500 hover:bg-rose-600 text-white font-extrabold py-3.5 rounded-xl transition shadow flex items-center justify-center gap-2 text-sm sm:text-base">
+                        <i class="fa-solid fa-thumbs-down"></i> Nicht gewusst (🔴)
+                    </button>
+                    <button onclick="rateCard(true)" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-3.5 rounded-xl transition shadow flex items-center justify-center gap-2 text-sm sm:text-base">
+                        <i class="fa-solid fa-thumbs-up"></i> Gewusst! (🟢)
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- STATISTIK MODAL -->
+    <div id="stats-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-amber-200">
+            <div class="flex justify-between items-center mb-4 border-b border-amber-100 pb-3">
+                <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-trophy text-amber-500"></i> Miras Lern-Statistik
+                </h3>
+                <button onclick="hideStatsModal()" class="text-slate-400 hover:text-slate-600 text-lg">✕</button>
+            </div>
+            
+            <div id="stats-list" class="space-y-2 mb-6 max-h-60 overflow-y-auto custom-scrollbar">
+                <!-- Dynamische History -->
+            </div>
+
+            <div class="flex gap-2">
+                <button onclick="resetAllProgress()" class="w-1/2 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold py-2.5 rounded-xl text-xs transition">
+                    Fortschritt Zurücksetzen
+                </button>
+                <button onclick="hideStatsModal()" class="w-1/2 bg-slate-800 hover:bg-slate-900 text-white font-bold py-2.5 rounded-xl text-xs transition">
+                    Schließen
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // STOFF-DATENBANK ALLER 8 SEITEN (100% VOLLABDECKUNG)
+        const pagesData = [
+            {
+                pageId: 1,
+                title: "Seite 1: Stadtgründung & Bürgertum",
+                cards: [
+                    {
+                        q: "An welchen 4 günstig gelegenen Orten wurden Städte bevorzugt gegründet?",
+                        a: "1. <b>Straßenkreuzungen</b><br>2. Bei <b>Burgen & Schlössern</b><br>3. An <b>Brücken</b><br>4. Aus <b>Römersiedlungen</b>",
+                        id: "p1_1"
+                    },
+                    {
+                        q: "Welche neue Bevölkerungsgruppe entstand durch den Städtebau und wer waren sie ursprünglich?",
+                        a: "Das <b>Bürgertum</b> (ursprünglich ehemalige Bauern).",
+                        id: "p1_2"
+                    },
+                    {
+                        q: "Welche zwei Dinge waren entscheidend, um in der Stadt politisch mitbestimmen zu können?",
+                        a: "<b>Besitz</b> und <b>Einkommen</b>.",
+                        id: "p1_3"
+                    },
+                    {
+                        q: "Wer genau konnte das Bürgerrecht in der Stadt erhalten?",
+                        a: "Nur derjenige, der einen <b>eigenen Hausstand führt</b>.",
+                        id: "p1_4"
+                    }
+                ]
+            },
+            {
+                pageId: 2,
+                title: "Seite 2: Die Bürger & Sozialstruktur",
+                cards: [
+                    {
+                        q: "Waren alle Bürger in der Stadt gleichberechtigt?",
+                        a: "<b>Nein!</b> Es gab reiche Kaufleute, aber auch arme Tagelöhner.",
+                        id: "p2_1"
+                    },
+                    {
+                        q: "Wie nannte man die wohlhabenden Kaufleute und wen wählten sie?",
+                        a: "Sie hießen <b>Patrizier</b>. Sie wählten den <b>Rat</b> und den <b>Bürgermeister</b>.",
+                        id: "p2_2"
+                    },
+                    {
+                        q: "Wer gehörte zu den armen Bevölkerungsschichten und wann erhielten sie Mitspracherecht?",
+                        a: "Tagelöhner, Knechte, Diener & Mägde. Mitspracherecht erhielten sie erst in der <b>Neuzeit</b>.",
+                        id: "p2_3"
+                    },
+                    {
+                        q: "Was ist eine Zunft?",
+                        a: "Ein Zusammenschluss aller <b>Meister desselben Berufs</b> zum Schutz ihrer Interessen (Preise, Löhne, Qualität).",
+                        id: "p2_4"
+                    },
+                    {
+                        q: "Was bedeutet die 'Walz' für Handwerksgesellen?",
+                        a: "Die <b>Wanderschaft</b> in andere Städte, um neue Arbeitsmethoden kennenzulernen.",
+                        id: "p2_5"
+                    },
+                    {
+                        q: "Warum wurden jüdische Menschen oft in den Geldverleih abgedrängt?",
+                        a: "Weil ihnen andere Berufe verboten waren und Christen das <b>Geldverleihen gegen Zinsen verboten</b> war.",
+                        id: "p2_6"
+                    },
+                    {
+                        q: "Welche Berufe durften Frauen unter anderem ausüben?",
+                        a: "Garnmacherei, Gold- & Seidenspinnerei sowie <b>Lebkuchenbäckerin</b>.",
+                        id: "p2_7"
+                    }
+                ]
+            },
+            {
+                pageId: 3,
+                title: "Seite 3: Zünfte & Das Handwerk",
+                cards: [
+                    {
+                        q: "Was musste ein Handwerker tun, bevor er in einen Beruf eintreten durfte?",
+                        a: "Er musste die zuständige Zunft um <b>Erlaubnis fragen</b>.",
+                        id: "p3_1"
+                    },
+                    {
+                        q: "Was wurde in einer schriftlichen 'Zunftordnung' festgelegt?",
+                        a: "Dauer der <b>Lehrjahre</b>, Anforderungen, <b>Lohn-Höhe, Preise</b> und Produkt-<b>Qualität</b>.",
+                        id: "p3_2"
+                    },
+                    {
+                        q: "Warum entstanden innerhalb der Zünfte 'geschlossene Heiratskreise'?",
+                        a: "Weil Handwerker meist nur mit Mitgliedern der <b>eigenen Zunft</b> feierten und heirateten.",
+                        id: "p3_3"
+                    },
+                    {
+                        q: "Warum hatten es Erfindungen und Neuerungen in den Zünften schwer?",
+                        a: "Weil die Zünfte streng das <b>eigene Traditionshandwerk schützten</b> und Konkurrenz verhinderten.",
+                        id: "p3_4"
+                    }
+                ]
+            },
+            {
+                pageId: 4,
+                title: "Seite 4: Stadt-Rechte vs. Land-Rechte",
+                cards: [
+                    {
+                        q: "Welche 4 Rechte hatten Freie Bürger in der Stadt?",
+                        a: "1. Freie <b>Heirat</b><br>2. Jederzeit <b>wegziehen</b><br>3. Eigenes <b>Erbe bestimmen</b><br>4. Besaßen <b>freies Eigentum</b>",
+                        id: "p4_1"
+                    },
+                    {
+                        q: "Welche Hauptpflicht hatten Freie Bürger im Notfall?",
+                        a: "Die Stadt <b>bewachen und verteidigen</b> helfen.",
+                        id: "p4_2"
+                    },
+                    {
+                        q: "Welche 3 Einschränkungen hatten unfreie Bauern auf dem Land?",
+                        a: "1. Erlaubnis vom <b>Grundherrn vor Hochzeit</b> nötig<br>2. Durften <b>nicht frei wegziehen</b><br>3. Haus & Hof gehörten dem Grundherrn",
+                        id: "p4_3"
+                    },
+                    {
+                        q: "Wie waren die 3 Stände im Mittelalter gegliedert?",
+                        a: "<b>1. Stand:</b> Geistliche (Klerus)<br><b>2. Stand:</b> Adelige (Herzöge, Ritter)<br><b>3. Stand:</b> Bürger & Bauern",
+                        id: "p4_4"
+                    }
+                ]
+            },
+            {
+                pageId: 5,
+                title: "Seite 5: Ängste, Hygiene & Die Pest",
+                cards: [
+                    {
+                        q: "Welche 3 Hauptdinge versetzten die Menschen in Angst und Schrecken?",
+                        a: "1. <b>Krankheiten</b> (Lebenserwartung ca. 35 Jahre)<br>2. <b>Feuer</b> (Holzhäuser, offene Kochstellen)<br>3. <b>Räuber & Mörderbanden</b>",
+                        id: "p5_1"
+                    },
+                    {
+                        q: "Wann und wie breitete sich die Pest aus und wodurch wurde sie übertragen?",
+                        a: "Breitete sich <b>1347 von Italien</b> aus. Übertragen durch <b>Rattenflöhe</b>.",
+                        id: "p5_2"
+                    },
+                    {
+                        q: "Wie waren die sanitären Bedingungen in den Städten?",
+                        a: "Katastrophal: <b>Unrat auf den Straßen</b>, kein sauberes Wasser, Ungeziefer, verdorbene Lebensmittel.",
+                        id: "p5_3"
+                    },
+                    {
+                        q: "Wie erklärten sich die Menschen die Pest?",
+                        a: "Als eine gerechte <b>Strafe Gottes</b> für ihr Leben.",
+                        id: "p5_4"
+                    }
+                ]
+            },
+            {
+                pageId: 6,
+                title: "Seite 6: Handel, Hanse & Seidenstraße",
+                cards: [
+                    {
+                        q: "Was war die Hanse und wer schloss sich darin zusammen?",
+                        a: "Ein <b>Städtebund von Ost- und Nordseeländern</b> zum Schutz gegen Fürsten, Seeräuber und zur Handelsförderung.",
+                        id: "p6_1"
+                    },
+                    {
+                        q: "Was waren die Kreuzzüge und wie hieß die berühmteste Handelsroute nach China?",
+                        a: "Kreuzzüge = Kriege zur Rückeroberung des 'Heiligen Landes'. Handelsroute: <b>Seidenstraße</b> (Europa bis China).",
+                        id: "p6_2"
+                    },
+                    {
+                        q: "Wer war Marco Polo?",
+                        a: "Einer der <b>ersten Europäer</b>, der Asien durchquerte und bis nach China kam.",
+                        id: "p6_3"
+                    },
+                    {
+                        q: "Welche Waren wurden beim Transsaharahandel getauscht?",
+                        a: "<b>Salz, Gold, Tuche, Pferde, Waffen & Sklaven</b>.",
+                        id: "p6_4"
+                    }
+                ]
+            },
+            {
+                pageId: 7,
+                title: "Seite 7: Das Rittertum & Erziehung",
+                cards: [
+                    {
+                        q: "Welcher Schicht gehörten die Ritter an?",
+                        a: "Dem <b>niederen Adel</b>.",
+                        id: "p7_1"
+                    },
+                    {
+                        q: "In welchen 3 Stufen erfolgte die Erziehung zum Ritter?",
+                        a: "1. <b>Page</b><br>2. <b>Knappe</b><br>3. <b>Schwertleite / Ritterschlag</b>",
+                        id: "p7_2"
+                    },
+                    {
+                        q: "Welche 3 Pflichten hatte ein Ritter?",
+                        a: "1. <b>Herrendienst</b> (Kriegsdienst, Turniere)<br>2. <b>Frauendienst</b> (Achtung hochgestellter Frauen)<br>3. <b>Gottesdienst</b> (Schutz der Kirche)",
+                        id: "p7_3"
+                    },
+                    {
+                        q: "Welche Waffen und Rüstungsteile trug ein Ritter?",
+                        a: "<b>Helm, Kettenhemd, Brustpanzer, Schild, Lanze & Schwert</b>.",
+                        id: "p7_4"
+                    }
+                ]
+            },
+            {
+                pageId: 8,
+                title: "Seite 8: Leibeigenschaft & Stadtluft macht frei",
+                cards: [
+                    {
+                        q: "Was bedeutete Leibeigenschaft für Bauern?",
+                        a: "Sie gehörten dem Grundherrn, waren völlig schutzlos und mussten hohe Abgaben leisten.",
+                        id: "p8_1"
+                    },
+                    {
+                        q: "Was besagte die Regel 'Stadtluft macht frei nach Jahr und Tag'?",
+                        a: "Lebte ein Leibeigener <b>1 Jahr und 1 Tag</b> in der Stadt ohne geholt zu werden, wurde er ein <b>freier Mensch</b>.",
+                        id: "p8_2"
+                    },
+                    {
+                        q: "Warum schlossen sich Kaufleute zu Gilden zusammen?",
+                        a: "Zum Schutz auf reisen, zur Wahrung ihrer Interessen und zur Gegenseitigkeit.",
+                        id: "p8_3"
+                    },
+                    {
+                        q: "Welche 3 Dinge erschwerten den Landtransport von Waren?",
+                        a: "1. Unbefestigte/gefährliche <b>Straßen</b><br>2. <b>Raubritter</b><br>3. Hohe <b>Zölle</b>",
+                        id: "p8_4"
+                    }
+                ]
+            }
+        ];
+
+        // LOGIK ZUSTAND
+        let activePageIndex = 0; // 0..7 = Seite 1..8, 8 = Gesamttest
+        let cardIndex = 0;
+        let activeDeck = [];
+
+        // Führerschein Scores: cardId -> score (0 = rot/ungelöst, 1 = gelb, 2 = orange, 3 = grün)
+        let cardScores = JSON.parse(localStorage.getItem('mira_adhs_scores') || '{}');
+
+        window.onload = function() {
+            renderNavGrid();
+            updateOverallProgress();
+            loadPage(0);
+        };
+
+        function renderNavGrid() {
+            const grid = document.getElementById('page-nav-grid');
+            grid.innerHTML = '';
+
+            for (let i = 0; i < pagesData.length; i++) {
+                const btn = document.createElement('button');
+                const status = getPageStatus(i + 1);
+
+                let colorClass = "border-slate-200 bg-white text-slate-700 hover:bg-amber-50";
+                let statusBadge = `<span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>`;
+
+                if (status === 'green') {
+                    colorClass = "border-emerald-300 bg-emerald-50 text-emerald-900 font-bold";
+                    statusBadge = `<span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>`;
+                } else if (status === 'orange') {
+                    colorClass = "border-orange-300 bg-orange-50 text-orange-900 font-bold";
+                    statusBadge = `<span class="w-2.5 h-2.5 rounded-full bg-orange-500"></span>`;
+                } else if (status === 'yellow') {
+                    colorClass = "border-amber-300 bg-amber-50 text-amber-900 font-bold";
+                    statusBadge = `<span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>`;
+                }
+
+                if (activePageIndex === i) {
+                    colorClass += " ring-2 ring-amber-600";
+                }
+
+                btn.className = `p-2 rounded-xl border text-xs text-left transition flex items-center justify-between shadow-sm ${colorClass}`;
+                btn.innerHTML = `<span>Seite ${i + 1}</span> ${statusBadge}`;
+                btn.onclick = () => loadPage(i);
+                grid.appendChild(btn);
+            }
+
+            // Gesamttest Button
+            const totalBtn = document.createElement('button');
+            let totalClass = "border-indigo-300 bg-indigo-50 text-indigo-900 hover:bg-indigo-100";
+            if (activePageIndex === 8) totalClass += " ring-2 ring-indigo-600";
+            totalBtn.className = `p-2 rounded-xl border text-xs font-bold text-center col-span-2 sm:col-span-1 shadow-sm flex items-center justify-center gap-1 ${totalClass}`;
+            totalBtn.innerHTML = `<i class="fa-solid fa-star text-amber-500"></i> Alle Mischen`;
+            totalBtn.onclick = () => loadPage(8);
+            grid.appendChild(totalBtn);
+        }
+
+        function getPageStatus(pageId) {
+            const page = pagesData[pageId - 1];
+            let minScore = 3;
+            let hasRed = false;
+
+            page.cards.forEach(c => {
+                const score = cardScores[c.id] || 0;
+                if (score === 0) hasRed = true;
+                if (score < minScore) minScore = score;
+            });
+
+            if (hasRed || minScore === 0) return 'red';
+            if (minScore === 1) return 'yellow';
+            if (minScore === 2) return 'orange';
+            return 'green';
+        }
+
+        function loadPage(idx) {
+            activePageIndex = idx;
+            cardIndex = 0;
+
+            if (idx === 8) {
+                document.getElementById('card-page-badge').innerText = "Gesamttest";
+                let allCards = [];
+                pagesData.forEach(p => {
+                    p.cards.forEach(c => allCards.push({ ...c, pageId: p.pageId }));
+                });
+                activeDeck = allCards.sort(() => Math.random() - 0.5);
+            } else {
+                const p = pagesData[idx];
+                document.getElementById('card-page-badge').innerText = `Seite ${p.pageId}`;
+                activeDeck = p.cards.map(c => ({ ...c, pageId: p.pageId }));
+            }
+
+            renderNavGrid();
+            displayCard();
+        }
+
+        function displayCard() {
+            const card = activeDeck[cardIndex];
+            document.getElementById('card-counter').innerText = `Karte ${cardIndex + 1} von ${activeDeck.length}`;
+            document.getElementById('card-question').innerText = card.q;
+            document.getElementById('card-answer').innerHTML = card.a;
+
+            // Status Badge
+            const currentScore = cardScores[card.id] || 0;
+            const badge = document.getElementById('card-status-badge');
+            if (currentScore === 0) {
+                badge.className = "text-xs px-2 py-0.5 rounded font-bold border border-rose-300 bg-rose-50 text-rose-800";
+                badge.innerText = "🔴 Noch Nicht Gewusst";
+            } else if (currentScore === 1) {
+                badge.className = "text-xs px-2 py-0.5 rounded font-bold border border-amber-300 bg-amber-50 text-amber-800";
+                badge.innerText = "🟡 1x Richtig";
+            } else if (currentScore === 2) {
+                badge.className = "text-xs px-2 py-0.5 rounded font-bold border border-orange-300 bg-orange-50 text-orange-800";
+                badge.innerText = "🟠 2x Richtig";
+            } else {
+                badge.className = "text-xs px-2 py-0.5 rounded font-bold border border-emerald-300 bg-emerald-50 text-emerald-800";
+                badge.innerText = "🟢 Gemeistert (3x)";
+            }
+
+            // Hide Answer, Show Reveal Button
+            document.getElementById('answer-box').classList.add('hidden');
+            document.getElementById('btn-reveal').classList.remove('hidden');
+            document.getElementById('rating-buttons').classList.add('hidden');
+        }
+
+        function revealAnswer() {
+            document.getElementById('answer-box').classList.remove('hidden');
+            document.getElementById('btn-reveal').classList.add('hidden');
+            document.getElementById('rating-buttons').classList.remove('hidden');
+        }
+
+        function rateCard(isCorrect) {
+            const card = activeDeck[cardIndex];
+            let score = cardScores[card.id] || 0;
+
+            if (isCorrect) {
+                score = Math.min(score + 1, 3);
+                if (score === 3) {
+                    confetti({ particleCount: 40, spread: 60, origin: { y: 0.7 } });
+                }
+                saveDailyStat(true);
+            } else {
+                score = 0; // Sofort zurück auf Rot bei Fehler!
+                saveDailyStat(false);
+            }
+
+            cardScores[card.id] = score;
+            localStorage.setItem('mira_adhs_scores', JSON.stringify(cardScores));
+
+            updateOverallProgress();
+            renderNavGrid();
+
+            // Weiter zur nächsten Karte
+            if (cardIndex + 1 < activeDeck.length) {
+                cardIndex++;
+                displayCard();
+            } else {
+                alert("Großartig! Du hast diesen Durchgang beendet!");
+                loadPage((activePageIndex + 1) % 9);
+            }
+        }
+
+        function updateOverallProgress() {
+            let totalCards = 0;
+            let countRed = 0;
+            let countYellow = 0;
+            let countOrange = 0;
+            let countGreen = 0;
+
+            pagesData.forEach(p => {
+                p.cards.forEach(c => {
+                    totalCards++;
+                    const score = cardScores[c.id] || 0;
+                    if (score === 0) countRed++;
+                    else if (score === 1) countYellow++;
+                    else if (score === 2) countOrange++;
+                    else if (score === 3) countGreen++;
+                });
+            });
+
+            const redPct = (countRed / totalCards) * 100;
+            const yellowPct = (countYellow / totalCards) * 100;
+            const orangePct = (countOrange / totalCards) * 100;
+            const greenPct = (countGreen / totalCards) * 100;
+
+            document.getElementById('bar-red').style.width = `${redPct}%`;
+            document.getElementById('bar-yellow').style.width = `${yellowPct}%`;
+            document.getElementById('bar-orange').style.width = `${orangePct}%`;
+            document.getElementById('bar-green').style.width = `${greenPct}%`;
+
+            const mastery = Math.round(greenPct);
+            document.getElementById('overall-mastery-text').innerText = `${mastery}% Gemeistert`;
+        }
+
+        function saveDailyStat(isCorrect) {
+            const today = new Date().toISOString().split('T')[0];
+            let stats = JSON.parse(localStorage.getItem('mira_adhs_daily') || '{}');
+
+            if (!stats[today]) {
+                stats[today] = { total: 0, correct: 0 };
+            }
+
+            stats[today].total += 1;
+            if (isCorrect) stats[today].correct += 1;
+
+            localStorage.setItem('mira_adhs_daily', JSON.stringify(stats));
+        }
+
+        function showStatsModal() {
+            const stats = JSON.parse(localStorage.getItem('mira_adhs_daily') || '{}');
+            const container = document.getElementById('stats-list');
+            container.innerHTML = '';
+
+            const keys = Object.keys(stats).sort().reverse();
+            if (keys.length === 0) {
+                container.innerHTML = '<p class="text-xs text-slate-400 italic">Noch keine Tagesdaten vorhanden.</p>';
+            } else {
+                keys.forEach(date => {
+                    const item = stats[date];
+                    const acc = item.total > 0 ? Math.round((item.correct / item.total) * 100) : 0;
+                    const div = document.createElement('div');
+                    div.className = "p-3 bg-amber-50/80 rounded-xl flex justify-between items-center border border-amber-200 text-xs";
+                    div.innerHTML = `
+                        <span><strong>${date}</strong></span>
+                        <span>${item.correct} / ${item.total} richtig (${acc}%)</span>
+                    `;
+                    container.appendChild(div);
+                });
+            }
+
+            document.getElementById('stats-modal').classList.remove('hidden');
+        }
+
+        function hideStatsModal() {
+            document.getElementById('stats-modal').classList.add('hidden');
+        }
+
+        function resetAllProgress() {
+            if (confirm("Möchtest du Miras gesamten Führerschein-Fortschritt zurücksetzen?")) {
+                localStorage.removeItem('mira_adhs_scores');
+                localStorage.removeItem('mira_adhs_daily');
+                cardScores = {};
+                renderNavGrid();
+                updateOverallProgress();
+                loadPage(0);
+                hideStatsModal();
+            }
+        }
+    </script>
+</body>
+</html>
